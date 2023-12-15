@@ -1,6 +1,6 @@
 #!/bin/env bash
-pushd ob
-git checkout main
+pushd ~/obsidian_doc
+git checkout master
 git pull
 popd
 

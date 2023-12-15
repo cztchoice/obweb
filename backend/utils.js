@@ -41,7 +41,7 @@ function curTime() {
 }
 
 function gen_path(page, date) {
-    let path = page == "" ? `${OBPATH}/Daily/${date}.md` : `${OBPATH}/Unsort/${page}.md`;
+    let path = page == "" ? `${OBPATH}/journals/${date}.md` : `${OBPATH}/Unsort/${page}.md`;
     if (!fs.existsSync(path)) {
         fs.writeFileSync(path, "", 'utf-8');
     }

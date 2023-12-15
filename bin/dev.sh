@@ -1,6 +1,6 @@
 #!/bin/env bash
 pushd ob
-git checkout main
+git checkout master
 git pull
 popd
 

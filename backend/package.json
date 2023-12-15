@@ -11,7 +11,7 @@
         "update": "NODE_ENV=production node update.js"
     },
     "dependencies": {
-        "better-sqlite3": "^7.5.1",
+        "better-sqlite3": "^9.2.2",
         "china-time": "^0.12.3",
         "config": "^3.3.7",
         "escape-path-with-spaces": "^1.0.0",

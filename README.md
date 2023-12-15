@@ -62,7 +62,7 @@ git config user.name "Your Name"
 ```
 
 ## 2. Run the server
-Obweb assume your Obsidian vault has `Daily` and `Unsort` directories to store daily memos and unsorted notes.
+Obweb assume your Obsidian vault has `journals` and `Unsort` directories to store daily memos and unsorted notes.
 
 ```bash
 ./bin/dev.sh
