@@ -5,10 +5,10 @@ git pull
 popd
 
 pushd front
-npm install
-npm run build
+pnpm install
+pnpm run build
 popd
 
 pushd backend
-npm run dev
+pnpm run dev
 
