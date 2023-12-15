@@ -17,7 +17,7 @@
     <Nav on:message={refresh}/>
     <div class="container">
         <Login />
-        {#if cur_page == "day"}
+        {#if cur_page == "index"}
             <Day />
         {:else}
             <Page bind:cur_page={cur_page} cur_time={cur_time}/>

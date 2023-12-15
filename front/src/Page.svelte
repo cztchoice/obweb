@@ -62,7 +62,7 @@
 
     function getDaily(date) {
         let date_str = dateStr(date);
-        fetchPage(`Daily/${date_str}`);
+        fetchPage(`journals/${date_str}`);
     }
 
     function preprocessImage(response) {

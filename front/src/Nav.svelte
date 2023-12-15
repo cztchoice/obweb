@@ -9,10 +9,10 @@
         event.preventDefault();
         cur_page = event.target.innerText.toLowerCase();
         if (cur_page == "obweb") {
-            cur_page = "day";
+            cur_page = "index";
         }
         dispatch('message', cur_page);
-        console.log("dispatched ....");
+        console.log("dispatched ...." + cur_page);
     }
 </script>
 
