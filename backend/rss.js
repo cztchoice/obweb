@@ -1,6 +1,5 @@
 const fs = require('fs')
 const { resolve } = require('path');
-var request = require('request');
 var HTMLParser = require('node-html-parser');
 let RssParser = require('rss-parser');
 var crypto = require('crypto');
@@ -125,20 +124,18 @@ function transform_html(html) {
     return remove_elems(body, keywords);
 }
 
-function fetch_page_content(link) {
+async function fetch_page_content(link) {
     if (isValidHttpUrl(link)) {
-        return new Promise((resolve, reject) => {
-            request(link, function(error, response, body) {
-                //console.log("response type is: ", response.headers);
-                if (!error && response.statusCode == 200 && response.headers['content-type'].indexOf("text/html") != -1) {
-                    resolve(transform_html(body));
-                } else {
-                    reject(error);
-                }
-            });
-        });
+        const response = await fetch(link);
+        if (response.ok && response.headers.get("content-type").indexOf("text/html") != -1) {
+            const body = await response.text();
+            return transform_html(body);
+        } else {
+            console.log("Invalid response " + response);
+            throw new Error("Invalid response");
+        }
     }
-}
+  }
 
 async function fetchFeed(feed_url) {
     let res = [];

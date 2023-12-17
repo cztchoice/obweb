@@ -32,7 +32,6 @@
         "node-html-parser": "^6.1.11",
         "nodemon": "^3.0.2",
         "npm-check-updates": "^16.14.12",
-        "request": "^2.88.2",
         "rewire": "^7.0.0",
         "rss-parser": "^3.12.0"
     },
