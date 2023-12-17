@@ -11,6 +11,14 @@ const bodyParser = require('koa-bodyparser');
 const chinaTime = require('china-time');
 const { resolve } = require('path');
 const basicAuth = require('koa-basic-auth');
+const dayjs = require('dayjs')
+var customParseFormat = require('dayjs/plugin/customParseFormat')
+dayjs.extend(customParseFormat)
+var isSameOrAfter = require('dayjs/plugin/isSameOrAfter')
+dayjs.extend(isSameOrAfter)
+var isSameOrBefore = require('dayjs/plugin/isSameOrBefore')
+dayjs.extend(isSameOrBefore)
+
 const { readdir } = require('fs').promises;
 const RSS = require('./rss');
 const config = require('config');
@@ -73,7 +81,7 @@ function init() {
 app.use(async(ctx, next) => {
     let white_list = ["/api/login", "/obweb"];
     console.log("ctx url: ", ctx.url);
-    if (!ctx.url.match(/^\/front/) && white_list.indexOf(ctx.url) == -1) {
+    if (!ctx.url.match(/^\/front/) && white_list.indexOf(ctx.url) === -1) {
         await verify_login(ctx);
     }
     if (ctx.status != 401) {
@@ -123,7 +131,7 @@ async function user_login(ctx) {
     }
 }
 
-async function getFiles(dir) {
+async function getFiles(dir, isRecursion = true) {
     const dirents = await readdir(dir, { withFileTypes: true });
     const files = await Promise.all(dirents.map((dirent) => {
         const path = resolve(dir, dirent.name);
@@ -131,9 +139,31 @@ async function getFiles(dir) {
             path: path,
             time: fs.statSync(path).mtime.getTime()
         }
-        return dirent.isDirectory() ? getFiles(path) : obj;
+        return (dirent.isDirectory() && isRecursion ) ? getFiles(path) : obj;
     }));
     return Array.prototype.concat(...files);
+}
+
+async function getFilenames(dir, isRecursion = true, filter_func = (filename) => true) {
+    let file_paths = await getFiles(dir, isRecursion);
+    let filenames = [];
+    for (const file_path of file_paths) {
+        let filename = path.basename(file_path.path);
+        if (filter_func && filter_func(filename)) {
+            filenames.push(filename);
+        }
+    }
+    return filenames;
+}
+
+async function getDailyFilenames(dir, isRecursion = true, filter_func = (filename) => true) {
+    let daily_path = path.join(OBPATH, `journals`);
+    const regex = /^20\d\d-\d\d-\d\d\.md$/;
+    let filenames = await getFilenames(daily_path, false, (filename) => {
+        return regex.test(filename);
+    });
+    filenames.sort();
+    return filenames;
 }
 
 async function get_page(ctx) {
@@ -154,13 +184,55 @@ async function get_page(ctx) {
             ctx.body = "NoPage";
         }
     } else {
-        let page_path = path.join(OBPATH, `${query_path}.md`);
-        console.log("get page_page: ", page_path);
-        if (fs.existsSync(page_path)) {
-            let content = Utils.safeRead(page_path, 'utf-8');
-            ctx.body = [Utils.strip_ob(page_path), content];
+        let file_path;
+        if (query_type === "daily_next") {
+            // 当是 daily_next 或者 daily_prev 时，自己去寻找下一个、上一个日历文件
+            cur_day_str = path.basename(query_path).replace('.md', '');
+            let cur_day = dayjs(cur_day_str, 'YYYY-MM-DD', true);
+            let next_day = cur_day.subtract(1, 'day');
+
+            let filenames = await getDailyFilenames();
+
+            for (let i =  0; i < filenames.length; i++) {
+                let filename = filenames[i];
+                let file_day_str = filename.replace('.md', '');
+                let file_day = dayjs(file_day_str, 'YYYY-MM-DD', true);
+                if (file_day.isSameOrAfter(next_day, 'day')) {
+                    file_path = `journals/${file_day_str}`;
+                    break;
+                }
+            }
+
+        } else if (query_type === "daily_prev") {
+            cur_day_str = path.basename(query_path).replace('.md', '');
+            let cur_day = dayjs(cur_day_str, 'YYYY-MM-DD', true);
+            let prev_day = cur_day.subtract(1, 'day');
+
+            let filenames = await getDailyFilenames();
+
+            for (let i = filenames.length - 1; i >= 0; i--) {
+                let filename = filenames[i];
+                let file_day_str = filename.replace('.md', '');
+                let file_day = dayjs(file_day_str, 'YYYY-MM-DD', true);
+                if (file_day.isSameOrBefore(prev_day, 'day')) {
+                    file_path = `journals/${file_day_str}`;
+                    break;
+                }
+            }
         } else {
+            file_path = query_path;
+        }
+        if (file_path === undefined) {
             ctx.body = ["NoPage", ""];
+        } else {
+            let page_path = path.join(OBPATH, `${file_path}.md`);
+            console.log("get page_page: ", page_path);
+            if (fs.existsSync(page_path)) {
+                let content = Utils.safeRead(page_path, 'utf-8');
+                ctx.body = [Utils.strip_ob(page_path), content];
+            } else {
+                ctx.body = ["NoPage", ""];
+            }
         }
     }
 }

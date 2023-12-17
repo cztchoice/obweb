@@ -51,13 +51,13 @@
     }
 
     function nextDaily() {
-        date = new Date(date.setDate(date.getDate() + 1));
-        getDaily(date);
+        let date_str = dateStr(date);
+        fetchPage(date_str, "daily_next");
     }
 
     function prevDaily() {
-        date = new Date(date.setDate(date.getDate() - 1));
-        getDaily(date);
+        let date_str = dateStr(date);
+        fetchPage(date_str, "daily_prev");
     }
 
     function getDaily(date) {
@@ -213,6 +213,11 @@
             success: function (response) {
                 show_status = false;
                 file = response[0];
+                if (query_type.startsWith("daily_")) {
+                    let index = file.lastIndexOf('/');
+                    let date_str = file.substring(index).replace('.md', '');
+                    date.setDate(Date.parse(date_str));
+                }
                 content = response[1];
                 rsslink = response[2];
                 publish_time = response[3];
