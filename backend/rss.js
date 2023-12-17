@@ -7,7 +7,7 @@ var crypto = require('crypto');
 const path = require('path')
 const AppDao = require('./dao.js');
 const Utils = require('./utils');
-var moment = require('moment');
+const dayjs = require('dayjs')
 
 const config = require('config');
 const SERV_PATH = resolve(config.get("serv_path"));
@@ -159,7 +159,7 @@ async function fetchFeed(feed_url) {
         let pre = getRss(item.link)[0];
         if (pre == undefined) {
             let sql = "INSERT INTO pages (title, link, website, publish_datetime, updated_datetime, readed, source) values (?, ?, ?, ?, ?, ?, ?)";
-            let pubDate = moment(item.pubDate).format("YYYY-MM-DD HH:mm:ss");
+            let pubDate = dayjs(item.pubDate).format("YYYY-MM-DD HH:mm:ss");
             AppDao.db().run(
                 sql, [item.title, item.link, item.link, pubDate, Utils.curTime(), 0, feed_url]);
             let page = getRss(item.link)[0];

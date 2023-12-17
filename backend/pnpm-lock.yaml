@@ -59,9 +59,6 @@ dependencies:
   koa-static-server:
     specifier: ^1.5.2
     version: 1.5.2
-  moment:
-    specifier: ^2.29.4
-    version: 2.29.4
   node-html-parser:
     specifier: ^6.1.11
     version: 6.1.11

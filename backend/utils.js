@@ -4,8 +4,7 @@ const path = require('path')
 var exec = require('child_process').exec;
 const { resolve } = require('path');
 const execSync = require('child_process').execSync;
-var moment = require('moment');
-
+const dayjs = require('dayjs')
 
 const SERV_PATH = resolve(config.get("serv_path"));
 const OBPATH = resolve(path.join(SERV_PATH, config.get("ob_name")));
@@ -37,7 +36,7 @@ function strip_ob(path) {
 }
 
 function curTime() {
-    return moment().format('YYYY-MM-DD HH:mm:ss');
+    return dayjs().format('YYYY-MM-DD HH:mm:ss');
 }
 
 function gen_path(page, date) {

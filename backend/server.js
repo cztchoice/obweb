@@ -26,7 +26,6 @@ const Utils = require('./utils.js');
 const session = require('koa-generic-session');
 const SQLite3Store = require('koa-sqlite3-session');
 
-var moment = require('moment');
 var crypto = require('crypto');
 
 const SERV_PATH = resolve(config.get("serv_path"));
@@ -179,7 +178,7 @@ async function get_page(ctx) {
             let title = data[0].title;
             let rss_path = resolve(path.join(PAGESPATH, `${data[0].id}.html`));
             let rss_page = Utils.safeRead(rss_path, 'utf-8');
-            ctx.body = [title, rss_page, query_path, moment(data[0].publish_datetime).format("YYYY.MM.DD")];
+            ctx.body = [title, rss_page, query_path, dayjs(data[0].publish_datetime).format("YYYY.MM.DD")];
         } else {
             ctx.body = "NoPage";
         }
