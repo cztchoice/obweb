@@ -11,14 +11,15 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.9.0",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-svelte": "^7.1.6",
-    "@rollup/plugin-terser": "^0.4.4",
     "svelte": "^3.59.2"
   },
   "dependencies": {
+    "dayjs": "^1.11.10",
     "sirv-cli": "^2.0.2",
     "svelte-tags-input": "^5.0.0",
     "sveltestrap": "^5.6.3"

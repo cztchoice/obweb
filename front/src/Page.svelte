@@ -1,10 +1,11 @@
 <script>
     import { onMount } from "svelte";
+    import dayjs from "dayjs/esm";
     const jq = window.$;
 
     export let cur_page;
     export let cur_time;
-    let date = new Date();
+    let global_date = new Date();
     let file = "";
     let content = "";
     let show_status = false;
@@ -17,7 +18,7 @@
 
     export const refresh = (cur) => {
         if (cur_page == "day") {
-            getDaily(date);
+            getDaily(global_date);
         } else if (cur_page == "rand") {
             fetchPage("", "rand");
         } else if (cur_page == "todo") {
@@ -51,12 +52,12 @@
     }
 
     function nextDaily() {
-        let date_str = dateStr(date);
+        let date_str = dateStr(global_date);
         fetchPage(date_str, "daily_next");
     }
 
     function prevDaily() {
-        let date_str = dateStr(date);
+        let date_str = dateStr(global_date);
         fetchPage(date_str, "daily_prev");
     }
 
@@ -216,8 +217,9 @@
                 if (query_type === "daily_prev" || query_type === "daily_next") {
                     let index = file.lastIndexOf('/');
                     // 返回的名称样例: `journals/2023-12-17.md`
-                    let date_str = file.substring(index).replace('.md', '');
-                    date.setDate(Date.parse(date_str));
+                    let date_str = file.substring(index + 1).replace('.md', '');
+                    let return_day = dayjs(date_str);
+                    global_date = return_day.toDate();
                 }
                 content = response[1];
                 rsslink = response[2];
