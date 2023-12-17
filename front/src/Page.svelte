@@ -213,8 +213,9 @@
             success: function (response) {
                 show_status = false;
                 file = response[0];
-                if (query_type.startsWith("daily_")) {
+                if (query_type === "daily_prev" || query_type === "daily_next") {
                     let index = file.lastIndexOf('/');
+                    // 返回的名称样例: `journals/2023-12-17.md`
                     let date_str = file.substring(index).replace('.md', '');
                     date.setDate(Date.parse(date_str));
                 }
