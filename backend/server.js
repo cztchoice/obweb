@@ -12,8 +12,6 @@ const chinaTime = require('china-time');
 const { resolve } = require('path');
 const basicAuth = require('koa-basic-auth');
 const dayjs = require('dayjs')
-var customParseFormat = require('dayjs/plugin/customParseFormat')
-dayjs.extend(customParseFormat)
 var isSameOrAfter = require('dayjs/plugin/isSameOrAfter')
 dayjs.extend(isSameOrAfter)
 var isSameOrBefore = require('dayjs/plugin/isSameOrBefore')
@@ -187,15 +185,15 @@ async function get_page(ctx) {
         if (query_type === "daily_next") {
             // 当是 daily_next 或者 daily_prev 时，自己去寻找下一个、上一个日历文件
             cur_day_str = path.basename(query_path).replace('.md', '');
-            let cur_day = dayjs(cur_day_str, 'YYYY-MM-DD', true);
-            let next_day = cur_day.subtract(1, 'day');
+            let cur_day = dayjs(cur_day_str);
+            let next_day = cur_day.add(1, 'day');
 
             let filenames = await getDailyFilenames();
 
             for (let i =  0; i < filenames.length; i++) {
                 let filename = filenames[i];
                 let file_day_str = filename.replace('.md', '');
-                let file_day = dayjs(file_day_str, 'YYYY-MM-DD', true);
+                let file_day = dayjs(file_day_str);
                 if (file_day.isSameOrAfter(next_day, 'day')) {
                     file_path = `journals/${file_day_str}`;
                     break;
@@ -204,7 +202,7 @@ async function get_page(ctx) {
 
         } else if (query_type === "daily_prev") {
             cur_day_str = path.basename(query_path).replace('.md', '');
-            let cur_day = dayjs(cur_day_str, 'YYYY-MM-DD', true);
+            let cur_day = dayjs(cur_day_str);
             let prev_day = cur_day.subtract(1, 'day');
 
             let filenames = await getDailyFilenames();
@@ -212,7 +210,7 @@ async function get_page(ctx) {
             for (let i = filenames.length - 1; i >= 0; i--) {
                 let filename = filenames[i];
                 let file_day_str = filename.replace('.md', '');
-                let file_day = dayjs(file_day_str, 'YYYY-MM-DD', true);
+                let file_day = dayjs(file_day_str);
                 if (file_day.isSameOrBefore(prev_day, 'day')) {
                     file_path = `journals/${file_day_str}`;
                     break;

@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import dayjs from "dayjs/esm";
+    import dayjs from "dayjs";
     const jq = window.$;
 
     export let cur_page;
