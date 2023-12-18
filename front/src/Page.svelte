@@ -5,6 +5,7 @@
 
     export let cur_page;
     export let cur_time;
+    let page_content_hidden = true;
     let global_date = new Date();
     let file = "";
     let content = "";
@@ -184,6 +185,10 @@
         });
     }
 
+    function isDailyQueryType(query_type) {
+        return query_type === "daily_prev" || query_type === "daily_next";
+    };
+
     function fetchPage(url, query_type = "") {
         let date = new Date();
         let begin_date = new Date(date.setDate(date.getDate() - 1000));
@@ -214,12 +219,14 @@
             success: function (response) {
                 show_status = false;
                 file = response[0];
-                if (query_type === "daily_prev" || query_type === "daily_next") {
+                if (file !== 'NoPage' && isDailyQueryType(query_type)) {
                     let index = file.lastIndexOf('/');
                     // 返回的名称样例: `journals/2023-12-17.md`
                     let date_str = file.substring(index + 1).replace('.md', '');
                     let return_day = dayjs(date_str);
-                    global_date = return_day.toDate();
+                    if (return_day.isValid) {
+                        global_date = return_day.toDate();
+                    }
                 }
                 content = response[1];
                 rsslink = response[2];
@@ -232,7 +239,8 @@
                     jq("#pageNavBar").prop("hidden", false);
                     let res = query_type == "rss" ? content : renderMdToHtml(content);
                     jq("#page-content").html(res);
-                    jq("#page-content").prop("hidden", false);
+                    page_content_hidden = false;
+                    // jq("#page-content").prop("hidden", false);
                     if (rsslink != undefined && rsslink != "") {
                         jq("#rsslink").prop("hidden", false);
                         show_rsslink = true;
@@ -369,7 +377,8 @@
                 show_status = false;
                 if (response != "no-page") {
                     jq("#page-content").html(renderMdToHtml(response));
-                    jq("#page-content").prop("hidden", false);
+                    page_content_hidden = false;
+                    // jq("#page-content").prop("hidden", false);
                     jq("#fileName").prop("hidden", true);
                     jq("#pageNavBar").prop("hidden", true);
                     setPageDefault();
@@ -444,7 +453,8 @@
                 file = "rss";
                 if (response != "no-page") {
                     jq("#page-content").html(renderMdToHtml(response));
-                    jq("#page-content").prop("hidden", false);
+                    // jq("#page-content").prop("hidden", false);
+                    page_content_hidden = false;
                     jq("#fileName").prop("hidden", true);
                     jq("#backBtn").prop("hidden", true);
                     jq("#markBtn").prop("hidden", false);
@@ -646,7 +656,7 @@
     <div class="row">
         <div class="col-md-2" />
         <div class="col-md-8">
-            <div class="pageContent" hidden="true" id="page-content" />
+            <div class="pageContent" hidden="{page_content_hidden}" id="page-content" />
         </div>
     </div>
 </div>
